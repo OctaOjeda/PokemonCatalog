@@ -1,6 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
 const Navigation = () => {
+  const { userInfo, setUserInfo } = useUser();
+  
   return (
     <nav className="bg-white shadow-md px-6 py-4 flex items-center justify-between border-b border-black">
       <div className="flex items-center gap-2">
@@ -19,9 +23,14 @@ const Navigation = () => {
       </div>
 
       <div className="flex gap-3">
-        <button className="px-4 py-1 border border-purple-500 text-purple-500 rounded hover:bg-purple-100 transition">
+        { !userInfo && <button className="px-4 py-1 border border-purple-500 text-purple-500 rounded hover:bg-purple-100 transition">
           <Link to="/login">Login</Link>
         </button>
+        }
+        { userInfo && <button onClick={() => { localStorage.removeItem("userInfo"); setUserInfo(undefined) }} className="px-4 py-1 border border-purple-500 text-purple-500 rounded hover:bg-purple-100 transition">
+          Logout
+        </button>
+        }
         <Link
           to="/register"
           className="px-4 py-1 bg-purple-500 text-black rounded hover:bg-purple-600 transition flex items-center justify-center"

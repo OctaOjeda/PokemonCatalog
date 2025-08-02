@@ -26,7 +26,7 @@ const pokemons = [
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center py-10 px-4">
+    <div className=" bg-white flex flex-col items-center py-10 px-4">
       {/* Título original en púrpura */}
       <h1 className="text-4xl font-bold text-purple-500 mb-8">Pokemon Catalog</h1>
 
