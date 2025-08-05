@@ -1,151 +1,169 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-//import { register } from 'swiper/element';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 const Register = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState({
-    name: "",
-    lastname: "",
-    email: "",
-    username: "",
-    password: ""
+
+  const validationSchema = Yup.object({
+    name: Yup.string()
+      .min(2, 'Name must be at least 2 characters')
+      .max(50, 'Name must be less than 50 characters')
+      .required('Name is required'),
+    lastname: Yup.string()
+      .min(2, 'Lastname must be at least 2 characters')
+      .max(50, 'Lastname must be less than 50 characters')
+      .required('Lastname is required'),
+    username: Yup.string()
+      .min(3, 'Username must be at least 3 characters')
+      .max(20, 'Username must be less than 20 characters')
+      .matches(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
+      .required('Username is required'),
+    email: Yup.string()
+      .email('Invalid email format')
+      .required('Email is required'),
+    password: Yup.string()
+      .min(6, 'Password must be at least 6 characters')
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one uppercase letter, one lowercase letter, and one number')
+      .required('Password is required')
   });
 
-  const registerUser = async () => {
+  const initialValues = {
+    name: '',
+    lastname: '',
+    email: '',
+    username: '',
+    password: ''
+  };
+
+  const registerUser = async (userData) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/register', {
-        name: user.name,
-        lastname: user.lastname,
-        email: user.email,
-        username: user.username,
-        password: user.password
-      });
-  
-      // mostrar mensaje de exito si guarda bien
+      const response = await axios.post('http://localhost:3001/api/auth/register', userData);
       console.log('User registered:', response.data);
       navigate('/login');  
     } catch (error) {
-      // mostrar mensaje de error si falla
       console.error('Error registering user:', error.response?.data || error.message);
+      throw error;
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("handleSubmit")
-
-    console.log(user)
-    if (!user.name || !user.lastname || !user.email || !user.username || !user.password) {
-      alert('All fields are required');
-      return;
+  const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
+    try {
+      console.log("handleSubmit");
+      console.log(values);
+      await registerUser(values);
+    } catch (error) {
+      if (error.response?.data?.message) {
+        setFieldError('general', error.response.data.message);
+      } else {
+        setFieldError('general', 'Registration failed. Please try again.');
+      }
+    } finally {
+      setSubmitting(false);
     }
-
-    // llamar al servicio para guardar
-    registerUser();
-
   };
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4">
       <div className="border border-gray-400 p-8 rounded-md w-full max-w-md shadow-md mt-[-40px]">
-        {/* Título */}
         <h2 className="text-3xl font-bold text-purple-500 mb-6">Register</h2>
 
-        <form className="flex flex-col gap-4">
-          {/* Nombre y Apellido lado a lado */}
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                Name
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
-                placeholder="Enter name"
-                value={user.name}
-                onChange={(e) => setUser({ ...user, name: e.target.value })}
-              />
-            </div>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ isSubmitting, errors }) => (
+            <Form className="flex flex-col gap-4">
+              {errors.general && (
+                <div className="text-red-500 text-sm mb-2">{errors.general}</div>
+              )}
 
-            <div className="flex-1">
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                Lastname
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
-                placeholder="Enter lastname"
-                value={user.lastname}
-                onChange={(e) => setUser({ ...user, lastname: e.target.value })}
-              />
-            </div>
-          </div>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    Name
+                  </label>
+                  <Field
+                    type="text"
+                    id="name"
+                    name="name"
+                    className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    placeholder="Enter name"
+                  />
+                  <ErrorMessage name="name" component="div" className="text-red-500 text-xs mt-1" />
+                </div>
 
-          {/* Nombre de usuario */}
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
-              placeholder="Enter username"
-              value={user.username}
-              onChange={(e) => setUser({ ...user, username: e.target.value })}
-            />
-          </div>
+                <div className="flex-1">
+                  <label htmlFor="lastname" className="block text-sm font-medium text-gray-700 mb-1">
+                    Lastname
+                  </label>
+                  <Field
+                    type="text"
+                    id="lastname"
+                    name="lastname"
+                    className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    placeholder="Enter lastname"
+                  />
+                  <ErrorMessage name="lastname" component="div" className="text-red-500 text-xs mt-1" />
+                </div>
+              </div>
 
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
-              placeholder="Enter email"
-              value={user.email}
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
-            />
-          </div>
+              <div>
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                  Username
+                </label>
+                <Field
+                  type="text"
+                  id="username"
+                  name="username"
+                  className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  placeholder="Enter username"
+                />
+                <ErrorMessage name="username" component="div" className="text-red-500 text-xs mt-1" />
+              </div>
 
-          {/* Contraseña */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
-              placeholder="Enter password"
-              value={user.password}
-              onChange={(e) => setUser({ ...user, password: e.target.value })}
-            />
-          </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <Field
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  placeholder="Enter email"
+                />
+                <ErrorMessage name="email" component="div" className="text-red-500 text-xs mt-1" />
+              </div>
 
-          {/* Botón Register */}
-          <button
-            type="submit"
-            className="bg-purple-500 text-black font-semibold py-2 rounded hover:bg-purple-400 transition"
-            onClick={handleSubmit}
-          >
-            Register
-          </button>
-        </form>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <Field
+                  type="password"
+                  id="password"
+                  name="password"
+                  className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  placeholder="Enter password"
+                />
+                <ErrorMessage name="password" component="div" className="text-red-500 text-xs mt-1" />
+              </div>
 
-        {/* Mensaje con link a Login subrayado púrpura */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-purple-500 text-black font-semibold py-2 rounded hover:bg-purple-400 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Registering...' : 'Register'}
+              </button>
+            </Form>
+          )}
+        </Formik>
+
         <p className="mt-4 text-sm text-gray-600">
           Have an account?{' '}
           <Link

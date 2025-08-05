@@ -3,6 +3,7 @@ import PokemonCard from './PokemonCard';
 import { useNavigate } from 'react-router-dom';
 import typeColors from '../constants';
 import axios from 'axios';
+import { useUser } from '../context/UserContext';
 
 const PokemonList = () => {
   const [search, setSearch] = useState('');
@@ -11,6 +12,7 @@ const PokemonList = () => {
   const [selectedPokemon, setSelectedPokemon] = useState(null);
 
   const navigate = useNavigate();
+  const { userInfo } = useUser();
   const itemsPerPage = 20;
 
   useEffect(() => {
@@ -61,12 +63,23 @@ const PokemonList = () => {
             className="border border-gray-300 rounded px-3 py-1"
           />
 
-          <button
-            onClick={() => navigate('/create')}
-            className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-1 rounded transition"
-          >
-            + Create Pokémon
-          </button>
+          {userInfo && (
+            <button
+              onClick={() => navigate('/create')}
+              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-1 rounded transition"
+            >
+              + Create Pokémon
+            </button>
+          )}
+          {!userInfo && (
+            <button
+              onClick={() => navigate('/login')}
+              className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-1 rounded transition"
+              title="Please login to create Pokemon"
+            >
+              Login to Create
+            </button>
+          )}
         </div>
       </div>
 

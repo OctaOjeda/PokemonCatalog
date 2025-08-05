@@ -19,6 +19,14 @@ const CreatePokemon = () => {
   const navigate = useNavigate();
   const { userInfo, setUserInfo } = useUser();
 
+  // Redirect to login if user is not authenticated
+  useEffect(() => {
+    if (!userInfo) {
+      navigate('/login');
+      return;
+    }
+  }, [userInfo, navigate]);
+
   useEffect(() => {
     const fetchTypes = async () => {
       try {
@@ -62,34 +70,50 @@ const CreatePokemon = () => {
     setPokemonData(rsp.data);
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!pokemonData.name.trim() || !pokemonData.image.trim() || !pokemonData.type) {
-      alert('Please fill in at least name, image, and type 1.');
-      return;
+  const handleSubmit = async (e, values) => {
+    if (e && e.preventDefault) {
+      e.preventDefault();
     }
 
-    if (pokemonData.type === pokemonData.type2 && pokemonData.type2 !== '') {
-      alert('Type 1 and Type 2 cannot be the same.');
-      return;
-    }
+    // Use values from Formik if available, otherwise fall back to pokemonData
+    const data = values || pokemonData;
 
     const payload = {
-      name: pokemonData.name.trim(),
-      image: pokemonData.image.trim(),
-      type: pokemonData.type,
-      type2: pokemonData.type2,
-      state: pokemonData.isLegendary ? 'Legendary' : 'Normal',
+      name: data.name.trim(),
+      image: data.image.trim(),
+      type: data.type,
+      type2: data.type2,
+      state: data.isLegendary ? 'Legendary' : 'Normal',
     };
 
-    createPokemon(payload);
-    setMessage('Pokémon updated successfully!');
+    try {
+      await createPokemon(payload);
+      setMessage('Pokémon created successfully!');
 
-    setTimeout(() => {
-      navigate('/pokemons');
-    }, 1500);
+      setTimeout(() => {
+        navigate('/pokemons');
+      }, 1500);
+    } catch (error) {
+      console.error('Error creating Pokémon:', error);
+      throw error; // Let Formik handle the error
+    }
   };
+
+  // Don't render anything if user is not authenticated
+  if (!userInfo) {
+    return (
+      <div className="max-w-xl mx-auto mt-12 px-6 py-8 bg-white rounded shadow-md text-center">
+        <h2 className="text-2xl font-bold mb-6 text-red-600">Access Denied</h2>
+        <p className="text-gray-600">You must be logged in to create Pokemon.</p>
+        <button 
+          onClick={() => navigate('/login')}
+          className="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded transition"
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-xl mx-auto mt-12 px-6 py-8 bg-white rounded shadow-md">
@@ -99,7 +123,6 @@ const CreatePokemon = () => {
       <PokemonForm
         pokemonData={pokemonData}
         types={types}
-        onChange={handleChange}
         onSubmit={handleSubmit}
         buttonLabel="Create"
         message={message}

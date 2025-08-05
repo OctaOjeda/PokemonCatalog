@@ -78,30 +78,47 @@ const PokemonCard = ({ pokemon, onClose, pokemons, setPokemons, setSelectedPokem
           {pokemon.state === 'Legendary' ? '🌟 Legendary Pokémon' : 'Normal Pokémon'}
         </p>
 
-        <div className="flex justify-center gap-4 mt-6">
-          <button
-            onClick={handleEdit}
-            className="px-4 py-1 border border-purple-500 text-purple-500 rounded hover:bg-purple-100 transition"
-            aria-label={`Edit ${pokemon.name}`}
-          >
-            ✏️ Edit
-          </button>
-        
-          <ModalPoke
-        isOpen={mostrarModal}
-        onClose={() => setMostrarModal(false)}
-        onConfirm={handleDelete}
-        mensaje="¿Estás seguro que querés continuar con esta acción?"
-      />
+        {userInfo && (
+          <div className="flex justify-center gap-4 mt-6">
+            <button
+              onClick={handleEdit}
+              className="px-4 py-1 border border-purple-500 text-purple-500 rounded hover:bg-purple-100 transition"
+              aria-label={`Edit ${pokemon.name}`}
+            >
+              ✏️ Edit
+            </button>
+          
+            <ModalPoke
+              isOpen={mostrarModal}
+              onClose={() => setMostrarModal(false)}
+              onConfirm={handleDelete}
+              mensaje="¿Estás seguro que querés continuar con esta acción?"
+            />
 
-          <button
-            onClick={() => setMostrarModal(true)}
-            className="px-4 py-1 border border-red-500 text-red-500 rounded hover:bg-red-100 transition"
-            aria-label={`Remove ${pokemon.name}`}
-          >
-            🗑️ Remove
-          </button>
-        </div>
+            <button
+              onClick={() => setMostrarModal(true)}
+              className="px-4 py-1 border border-red-500 text-red-500 rounded hover:bg-red-100 transition"
+              aria-label={`Remove ${pokemon.name}`}
+            >
+              🗑️ Remove
+            </button>
+          </div>
+        )}
+        
+        {!userInfo && (
+          <div className="flex justify-center mt-6">
+            <p className="text-gray-600 text-sm">
+              Please{' '}
+              <button
+                onClick={() => navigate('/login')}
+                className="text-purple-600 font-medium hover:text-purple-800 hover:underline cursor-pointer"
+              >
+                login
+              </button>{' '}
+              to edit or remove Pokemon
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
