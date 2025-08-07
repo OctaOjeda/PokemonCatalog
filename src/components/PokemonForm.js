@@ -24,7 +24,13 @@ const PokemonForm = ({
       .test('different-types', 'Type 1 and Type 2 cannot be the same', function(value) {
         if (!value) return true; // type2 is optional
         return value !== this.parent.type;
-      })
+      }),
+    level: Yup.number()
+      .min(1, 'Level must be at least 1')
+      .max(100, 'Level cannot exceed 100')
+      .integer('Level must be a whole number')
+      .nullable()
+      .transform((value, originalValue) => originalValue === '' ? null : value)
   });
 
   const handleFormSubmit = async (values, { setSubmitting, setFieldError }) => {
@@ -132,6 +138,22 @@ const PokemonForm = ({
                 </Field>
                 <ErrorMessage name="type2" component="div" className="text-red-500 text-xs mt-1" />
               </div>
+            </div>
+
+            <div>
+              <label className="block mb-1 font-semibold" htmlFor="level">
+                Level (optional)
+              </label>
+              <Field
+                type="number"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-purple-500"
+                id="level"
+                name="level"
+                placeholder="Enter level (1-100)"
+                min="1"
+                max="100"
+              />
+              <ErrorMessage name="level" component="div" className="text-red-500 text-xs mt-1" />
             </div>
 
             <div className="flex gap-6">

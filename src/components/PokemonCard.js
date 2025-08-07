@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import typeColors from '../constants';
+import typeColors, { API_BASE_URL } from '../constants';
 import { useUser } from '../context/UserContext';
 import axios from 'axios';
 import ModalPoke from "./ModalPoke";
@@ -21,7 +21,7 @@ const PokemonCard = ({ pokemon, onClose, pokemons, setPokemons, setSelectedPokem
       //if (!window.confirm('Are you sure you want delete')) return;
 
       try {
-        await axios.delete(`http://localhost:3001/api/pokemons/${pokemon._id}`, {
+        await axios.delete(`${API_BASE_URL}/pokemons/${pokemon._id}`, {
           headers: {
             Authorization: `Bearer ${userInfo?.token}`, 
           },

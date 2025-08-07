@@ -33,7 +33,7 @@ test.describe('Pokemon Catalog Component', () => {
     await expect(searchInput).toBeVisible();
     await expect(searchInput).toHaveAttribute('type', 'text');
     await expect(searchInput).toHaveClass(/w-full/);
-    await expect(searchInput).toHaveClass(/sm:w-1\\/3/);
+    await expect(searchInput).toHaveClass(/sm:w-1\/3/);
   });
 
   test('displays Pokemon cards in grid layout', async ({ page }) => {

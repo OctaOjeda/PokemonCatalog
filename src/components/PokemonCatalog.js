@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PokemonCard from './PokemonCard';
-import typeColors from '../constants';
+import typeColors, { API_BASE_URL } from '../constants';
 import axios from 'axios';
 
 const itemsPerPage = 12;
@@ -14,7 +14,7 @@ const PokemonCatalog = () => {
   useEffect(() => {
 
     const fetchPokemons = async () => {
-      const res = await axios.get('http://localhost:3001/api/pokemons');
+      const res = await axios.get(`${API_BASE_URL}/pokemons`);
       // console.log(res.data);
       setPokemons(res.data);
     };

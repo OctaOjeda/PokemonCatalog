@@ -2,6 +2,23 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Requirements
+
+- Node.js >= 20.0.0
+
+## Setup Instructions
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Start the backend server
+
+3. Configure the backend URL in the `constants.js` file
+
+4. Start the frontend application
+
 ## Available Scripts
 
 In the project directory, you can run:

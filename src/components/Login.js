@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useUser } from '../context/UserContext';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { API_BASE_URL } from '../constants';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Login = () => {
 
   const loginUser = async (userData) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/login', userData);
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, userData);
       console.log('User logged:', response.data);
       setUserInfo(response.data);
       localStorage.setItem("userInfo", JSON.stringify(response.data))

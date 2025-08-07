@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import PokemonForm from './PokemonForm';
 import axios from 'axios';
 import { useUser } from '../context/UserContext';
+import { API_BASE_URL } from '../constants';
 
 const CreatePokemon = () => {
   const [pokemonData, setPokemonData] = useState({
@@ -11,6 +12,7 @@ const CreatePokemon = () => {
     image: '',
     type: '',
     type2: '',
+    level: '',
     isLegendary: false,
     isNormal: true,
   });
@@ -59,7 +61,7 @@ const CreatePokemon = () => {
   };
 
   const createPokemon = async (payload) => {
-    const rsp = await axios.post('http://localhost:3001/api/pokemons',
+    const rsp = await axios.post(`${API_BASE_URL}/pokemons`,
         payload,
         {
           headers: {
@@ -83,6 +85,7 @@ const CreatePokemon = () => {
       image: data.image.trim(),
       type: data.type,
       type2: data.type2,
+      level: data.level ? parseInt(data.level, 10) : undefined,
       state: data.isLegendary ? 'Legendary' : 'Normal',
     };
 

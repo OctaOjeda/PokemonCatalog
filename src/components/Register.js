@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { API_BASE_URL } from '../constants';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const Register = () => {
 
   const registerUser = async (userData) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/register', userData);
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, userData);
       console.log('User registered:', response.data);
       navigate('/login');  
     } catch (error) {
